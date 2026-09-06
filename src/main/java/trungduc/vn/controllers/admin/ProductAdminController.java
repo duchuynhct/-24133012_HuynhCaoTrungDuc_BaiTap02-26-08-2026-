@@ -1,0 +1,161 @@
+package trungduc.vn.controllers.admin;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
+import trungduc.vn.entity.Category;
+import trungduc.vn.entity.Product;
+import trungduc.vn.services.ICategoryService;
+import trungduc.vn.services.IProductService;
+import trungduc.vn.services.impl.CategoryServiceImpl;
+import trungduc.vn.services.impl.ProductServiceImpl;
+
+@MultipartConfig(
+    fileSizeThreshold = 1024 * 1024 * 2, // 2MB
+    maxFileSize = 1024 * 1024 * 10,      // 10MB
+    maxRequestSize = 1024 * 1024 * 50    // 50MB
+)
+@WebServlet(urlPatterns = {
+    "/admin/products",
+    "/admin/product/add",
+    "/admin/product/insert",
+    "/admin/product/edit",
+    "/admin/product/update",
+    "/admin/product/delete"
+})
+public class ProductAdminController extends HttpServlet {
+
+    private static final long serialVersionUID = 1L;
+    private IProductService productService = new ProductServiceImpl();
+    private ICategoryService categoryService = new CategoryServiceImpl();
+    private static final String UPLOAD_DIRECTORY = "uploads";
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+        resp.setCharacterEncoding("UTF-8");
+
+        String url = req.getRequestURI();
+
+        if (url.contains("/admin/products")) {
+            List<Product> list = productService.findAll();
+            req.setAttribute("listProducts", list);
+            req.getRequestDispatcher("/views/admin/product-list.jsp").forward(req, resp);
+
+        } else if (url.contains("/admin/product/add")) {
+            List<Category> categories = categoryService.findAll();
+            req.setAttribute("categories", categories);
+            req.getRequestDispatcher("/views/admin/product-add.jsp").forward(req, resp);
+
+        } else if (url.contains("/admin/product/edit")) {
+            int id = Integer.parseInt(req.getParameter("id"));
+            Product product = productService.findById(id);
+            List<Category> categories = categoryService.findAll();
+            req.setAttribute("product", product);
+            req.setAttribute("categories", categories);
+            req.getRequestDispatcher("/views/admin/product-edit.jsp").forward(req, resp);
+
+        } else if (url.contains("/admin/product/delete")) {
+            try {
+                int id = Integer.parseInt(req.getParameter("id"));
+                productService.delete(id);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            resp.sendRedirect(req.getContextPath() + "/admin/products");
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+        resp.setCharacterEncoding("UTF-8");
+
+        String url = req.getRequestURI();
+        String uploadPath = req.getServletContext().getRealPath("") + File.separator + UPLOAD_DIRECTORY;
+        File uploadDir = new File(uploadPath);
+        if (!uploadDir.exists()) {
+            uploadDir.mkdir();
+        }
+
+        if (url.contains("/admin/product/insert")) {
+            String productName = req.getParameter("productname");
+            String description = req.getParameter("description");
+            double price = Double.parseDouble(req.getParameter("price"));
+            int quantity = Integer.parseInt(req.getParameter("quantity"));
+            int categoryId = Integer.parseInt(req.getParameter("categoryid"));
+            int status = Integer.parseInt(req.getParameter("status"));
+
+            // Xử lý upload ảnh
+            Part filePart = req.getPart("images");
+            String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+            String finalFileName = "";
+
+            if (fileName != null && !fileName.isEmpty()) {
+                finalFileName = System.currentTimeMillis() + "_" + fileName;
+                filePart.write(uploadPath + File.separator + finalFileName);
+            }
+
+            Category category = categoryService.findById(categoryId);
+
+            Product product = new Product();
+            product.setProductName(productName);
+            product.setDescription(description);
+            product.setPrice(price);
+            product.setQuantity(quantity);
+            product.setImages(finalFileName);
+            product.setStatus(status);
+            product.setCreateDate(LocalDateTime.now());
+            product.setCategory(category);
+
+            productService.insert(product);
+            resp.sendRedirect(req.getContextPath() + "/admin/products");
+
+        } else if (url.contains("/admin/product/update")) {
+            int id = Integer.parseInt(req.getParameter("productid"));
+            String productName = req.getParameter("productname");
+            String description = req.getParameter("description");
+            double price = Double.parseDouble(req.getParameter("price"));
+            int quantity = Integer.parseInt(req.getParameter("quantity"));
+            int categoryId = Integer.parseInt(req.getParameter("categoryid"));
+            int status = Integer.parseInt(req.getParameter("status"));
+            String oldImage = req.getParameter("oldImage");
+
+            // Xử lý upload ảnh mới nếu có
+            Part filePart = req.getPart("images");
+            String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+            String finalFileName = oldImage;
+
+            if (fileName != null && !fileName.isEmpty()) {
+                finalFileName = System.currentTimeMillis() + "_" + fileName;
+                filePart.write(uploadPath + File.separator + finalFileName);
+            }
+
+            Category category = categoryService.findById(categoryId);
+
+            Product product = productService.findById(id);
+            if (product != null) {
+                product.setProductName(productName);
+                product.setDescription(description);
+                product.setPrice(price);
+                product.setQuantity(quantity);
+                product.setImages(finalFileName);
+                product.setStatus(status);
+                product.setCategory(category);
+                productService.update(product);
+            }
+
+            resp.sendRedirect(req.getContextPath() + "/admin/products");
+        }
+    }
+}

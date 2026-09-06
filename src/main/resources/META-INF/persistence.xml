@@ -26,6 +26,8 @@
         <!-- Danh sách các Entity -->
         <class>trungduc.vn.entity.Category</class>
         <class>trungduc.vn.entity.Video</class>
+        <class>trungduc.vn.entity.User</class>
+        <class>trungduc.vn.entity.Product</class>
 
         <properties>
             <!-- Cấu hình kết nối JDBC -->

@@ -40,6 +40,9 @@ public class Category implements Serializable {
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Video> videos = new ArrayList<>();
 
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    private List<Product> products = new ArrayList<>();
+
     public Category() {
     }
 
@@ -106,5 +109,13 @@ public class Category implements Serializable {
             video.setCategory(null);
         }
         return video;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
     }
 }
