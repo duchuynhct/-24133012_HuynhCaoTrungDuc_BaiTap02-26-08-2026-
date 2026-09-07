@@ -39,6 +39,10 @@
    - **Trang Sản phẩm (`/product`):** Hiển thị toàn bộ sản phẩm với chức năng **phân trang 6 sản phẩm/trang**.
    - **Chi tiết Sản phẩm (`/product/detail?id=...`):** Xem chi tiết hình ảnh lớn, tên, danh mục, giá, số lượng kho, mô tả khi nhấp vào bất kỳ sản phẩm nào từ Trang chủ hoặc trang `/product`.
 
+6. **Hồ sơ Cá nhân (User Profile) & Quản trị Giao diện SiteMesh:**
+   - **Hồ sơ người dùng (`/profile`):** Xem và cập nhật họ tên (`fullname`), số điện thoại (`phone`), và ảnh đại diện (`images`) thông qua upload file dạng multipart request (`@MultipartConfig`). Ảnh được lưu trữ vào thư mục `uploads/` và đồng bộ vào CSDL qua JPA EntityManager (`em.merge()`).
+   - **SiteMesh 3:** Thống nhất giao diện bằng Decorator (`/decorators/web.jsp` và `/decorators/admin.jsp`), thanh điều hướng tự động hiển thị ảnh đại diện và tên người dùng với liên kết trực tiếp vào trang hồ sơ cá nhân.
+
 ---
 
 ### Danh sách các URL chính của dự án
@@ -48,10 +52,20 @@
 | Trang chủ (Top 10 sản phẩm mới) | `http://localhost:8080/BaiTap_26_8/home` |
 | Danh sách sản phẩm (Phân trang 6 sp/trang) | `http://localhost:8080/BaiTap_26_8/product` |
 | Chi tiết sản phẩm | `http://localhost:8080/BaiTap_26_8/product/detail?id=1` |
+| Hồ sơ người dùng (Cập nhật Profile) | `http://localhost:8080/BaiTap_26_8/profile` |
 | Đăng ký tài khoản | `http://localhost:8080/BaiTap_26_8/register` |
 | Xác thực OTP | `http://localhost:8080/BaiTap_26_8/verify-otp` |
 | Đăng nhập | `http://localhost:8080/BaiTap_26_8/login` |
 | Quên mật khẩu | `http://localhost:8080/BaiTap_26_8/forgot-password` |
 | Quản trị Sản phẩm (CRUD) | `http://localhost:8080/BaiTap_26_8/admin/products` |
 | Quản trị Danh mục (CRUD) | `http://localhost:8080/BaiTap_26_8/admin/categories` |
+
+---
+
+### Tài khoản quản trị (Admin) tạo sẵn:
+- **Tên đăng nhập (Username):** `admin`
+- **Mật khẩu (Password):** `123456`
+- **Vai trò (Role):** Quản trị viên (`roleid = 1`)
+- **Trạng thái:** Đã kích hoạt sẵn (`status = 1`), đăng nhập trực tiếp không cần OTP.
+
 

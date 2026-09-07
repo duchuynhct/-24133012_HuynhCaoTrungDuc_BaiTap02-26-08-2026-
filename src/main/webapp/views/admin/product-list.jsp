@@ -37,30 +37,10 @@
 </head>
 <body>
 
-<div class="header-bar">
-    <div>
-        <h2 style="margin: 0; color: #2c3e50;">QUẢN LÝ SẢN PHẨM</h2>
-        <div class="nav-links" style="margin-top: 8px;">
-            <a href="${pageContext.request.contextPath}/admin/categories">Quản lý Danh mục</a>
-            <a href="${pageContext.request.contextPath}/admin/products" style="color: #28a745;">Quản lý Sản phẩm</a>
-            <a href="${pageContext.request.contextPath}/home" target="_blank">Xem Trang chủ</a>
-            <a href="${pageContext.request.contextPath}/product" target="_blank">Xem Trang /product</a>
-        </div>
-    </div>
-    <div>
-        <c:choose>
-            <c:when test="${not empty sessionScope.account}">
-                <span>Xin chào, <strong>${sessionScope.account.fullname}</strong>!</span>
-                <a href="${pageContext.request.contextPath}/logout" class="btn btn-delete" style="margin-left: 10px;">Đăng xuất</a>
-            </c:when>
-            <c:otherwise>
-                <a href="${pageContext.request.contextPath}/login" class="btn" style="background: #1a73e8;">Đăng nhập</a>
-            </c:otherwise>
-        </c:choose>
-    </div>
+<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e0e0e0; padding-bottom: 12px; margin-bottom: 20px;">
+    <h2 style="margin: 0; color: #2c3e50;">📦 QUẢN LÝ SẢN PHẨM</h2>
+    <a href="${pageContext.request.contextPath}/admin/product/add" class="btn btn-add">+ Thêm sản phẩm mới</a>
 </div>
-
-<a href="${pageContext.request.contextPath}/admin/product/add" class="btn btn-add">+ Thêm sản phẩm mới</a>
 
 <table>
     <thead>

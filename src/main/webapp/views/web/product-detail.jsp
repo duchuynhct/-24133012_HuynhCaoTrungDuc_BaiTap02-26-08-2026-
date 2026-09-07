@@ -155,15 +155,6 @@
 </head>
 <body>
 
-<div class="navbar">
-    <a href="${pageContext.request.contextPath}/home" class="brand">SHOP ONLINE</a>
-    <div class="nav-menu">
-        <a href="${pageContext.request.contextPath}/home">Trang Chủ</a>
-        <a href="${pageContext.request.contextPath}/product">Sản Phẩm (/product)</a>
-        <a href="${pageContext.request.contextPath}/admin/products">Trang Quản Trị</a>
-    </div>
-</div>
-
 <div class="container">
     <c:choose>
         <c:when test="${not empty product}">
@@ -223,10 +214,6 @@
             </div>
         </c:otherwise>
     </c:choose>
-</div>
-
-<div class="footer">
-    &copy; 2026 Bài Tập Lập Trình Web - Sinh viên: Huỳnh Cao Trung Đức - MSSV: 24133012
 </div>
 
 </body>

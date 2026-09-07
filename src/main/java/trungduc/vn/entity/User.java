@@ -33,6 +33,9 @@ public class User implements Serializable {
     @Column(name = "fullname", columnDefinition = "nvarchar(100) not null")
     private String fullname;
 
+    @Column(name = "phone", columnDefinition = "nvarchar(20) null")
+    private String phone;
+
     @Column(name = "avatar", columnDefinition = "nvarchar(500) null")
     private String avatar;
 
@@ -57,6 +60,20 @@ public class User implements Serializable {
         this.password = password;
         this.email = email;
         this.fullname = fullname;
+        this.avatar = avatar;
+        this.status = status;
+        this.otpCode = otpCode;
+        this.otpExpiryTime = otpExpiryTime;
+        this.roleid = roleid;
+    }
+
+    public User(String username, String password, String email, String fullname, String phone, String avatar, int status,
+                String otpCode, LocalDateTime otpExpiryTime, int roleid) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.fullname = fullname;
+        this.phone = phone;
         this.avatar = avatar;
         this.status = status;
         this.otpCode = otpCode;
@@ -96,12 +113,29 @@ public class User implements Serializable {
         this.fullname = fullname;
     }
 
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
     public String getAvatar() {
         return avatar;
     }
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    // Alias getter/setter cho images trỏ tới avatar
+    public String getImages() {
+        return avatar;
+    }
+
+    public void setImages(String images) {
+        this.avatar = images;
     }
 
     public int getStatus() {

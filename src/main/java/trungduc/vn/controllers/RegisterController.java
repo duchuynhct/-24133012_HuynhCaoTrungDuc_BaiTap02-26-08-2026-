@@ -75,6 +75,10 @@ public class RegisterController extends HttpServlet {
         if (isRegistered) {
             HttpSession session = req.getSession();
             session.setAttribute("otp_email", email.trim());
+            User createdUser = userService.findByEmail(email.trim());
+            if (createdUser != null && createdUser.getOtpCode() != null) {
+                session.setAttribute("demo_otp", createdUser.getOtpCode());
+            }
             resp.sendRedirect(req.getContextPath() + "/verify-otp");
         } else {
             req.setAttribute("error", "Đăng ký thất bại, vui lòng thử lại sau!");

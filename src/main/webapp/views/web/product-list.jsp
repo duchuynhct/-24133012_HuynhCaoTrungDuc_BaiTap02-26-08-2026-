@@ -164,28 +164,6 @@
 </head>
 <body>
 
-<div class="navbar">
-    <a href="${pageContext.request.contextPath}/home" class="brand">SHOP ONLINE</a>
-    <div class="nav-menu">
-        <a href="${pageContext.request.contextPath}/home">Trang Chủ</a>
-        <a href="${pageContext.request.contextPath}/product" class="active">Sản Phẩm (/product)</a>
-        <a href="${pageContext.request.contextPath}/admin/products">Trang Quản Trị</a>
-        
-        <c:choose>
-            <c:when test="${not empty sessionScope.account}">
-                <span style="margin-left: 20px; color: #2e7d32; font-weight: 600;">
-                    Xin chào, ${sessionScope.account.fullname}
-                </span>
-                <a href="${pageContext.request.contextPath}/logout" style="color: #dc3545;">Đăng xuất</a>
-            </c:when>
-            <c:otherwise>
-                <a href="${pageContext.request.contextPath}/login">Đăng nhập</a>
-                <a href="${pageContext.request.contextPath}/register">Đăng ký</a>
-            </c:otherwise>
-        </c:choose>
-    </div>
-</div>
-
 <div class="container">
     <div class="page-header">
         <h2>📦 TẤT CẢ SẢN PHẨM</h2>
@@ -243,10 +221,6 @@
                class="page-btn ${currentPage >= totalPages ? 'disabled' : ''}">Sau &raquo;</a>
         </div>
     </c:if>
-</div>
-
-<div class="footer">
-    &copy; 2026 Bài Tập Lập Trình Web - Sinh viên: Huỳnh Cao Trung Đức - MSSV: 24133012
 </div>
 
 </body>

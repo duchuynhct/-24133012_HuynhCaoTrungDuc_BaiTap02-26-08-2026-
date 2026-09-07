@@ -44,4 +44,10 @@ public interface IUserService {
     boolean checkExistUsername(String username);
 
     boolean checkExistEmail(String email);
+
+    /**
+     * Cập nhật thông tin cá nhân của người dùng (fullname, phone, images)
+     * @return User sau khi cập nhật thành công, hoặc null nếu không tìm thấy
+     */
+    User updateProfile(String username, String fullname, String phone, String images);
 }

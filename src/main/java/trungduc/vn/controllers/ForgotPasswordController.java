@@ -39,6 +39,11 @@ public class ForgotPasswordController extends HttpServlet {
                 return;
             }
 
+            trungduc.vn.entity.User user = userService.findByEmail(email.trim());
+            if (user != null && user.getOtpCode() != null) {
+                session.setAttribute("demo_otp", user.getOtpCode());
+            }
+
             req.setAttribute("email", email);
             req.getRequestDispatcher("/views/reset-password.jsp").forward(req, resp);
             return;
@@ -68,6 +73,10 @@ public class ForgotPasswordController extends HttpServlet {
 
             if (sent) {
                 session.setAttribute("reset_email", email.trim());
+                trungduc.vn.entity.User user = userService.findByEmail(email.trim());
+                if (user != null && user.getOtpCode() != null) {
+                    session.setAttribute("demo_otp", user.getOtpCode());
+                }
                 resp.sendRedirect(req.getContextPath() + "/reset-password");
             } else {
                 req.setAttribute("error", "Email này chưa được đăng ký trong hệ thống!");
@@ -111,6 +120,7 @@ public class ForgotPasswordController extends HttpServlet {
             switch (result) {
                 case 1:
                     session.removeAttribute("reset_email");
+                    session.removeAttribute("demo_otp");
                     session.setAttribute("message", "Đặt lại mật khẩu thành công! Vui lòng đăng nhập bằng mật khẩu mới.");
                     resp.sendRedirect(req.getContextPath() + "/login");
                     break;

@@ -37,6 +37,11 @@ public class LoginController extends HttpServlet {
             req.setAttribute("message", message);
             session.removeAttribute("message");
         }
+        String error = (String) session.getAttribute("error");
+        if (error != null) {
+            req.setAttribute("error", error);
+            session.removeAttribute("error");
+        }
 
         req.getRequestDispatcher("/views/login.jsp").forward(req, resp);
     }
@@ -61,6 +66,9 @@ public class LoginController extends HttpServlet {
             if (user.getStatus() == 0) {
                 HttpSession session = req.getSession();
                 session.setAttribute("otp_email", user.getEmail());
+                if (user.getOtpCode() != null) {
+                    session.setAttribute("demo_otp", user.getOtpCode());
+                }
                 session.setAttribute("error", "Tài khoản của bạn chưa được kích hoạt. Vui lòng nhập mã OTP để kích hoạt!");
                 resp.sendRedirect(req.getContextPath() + "/verify-otp");
                 return;
