@@ -1,163 +1,137 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Đặt Lại Mật Khẩu</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 <style>
     body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background-color: #f0f2f5;
         display: flex;
         justify-content: center;
         align-items: center;
         min-height: 100vh;
-        margin: 0;
+        padding: 20px 15px;
     }
-    .card {
-        background: #ffffff;
-        padding: 35px 40px;
-        border-radius: 10px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    .reset-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
         width: 100%;
         max-width: 440px;
+        padding: 35px 30px;
     }
-    h2 {
-        margin-top: 0;
-        margin-bottom: 12px;
-        color: #1a73e8;
-        text-align: center;
+    .otp-code-input {
+        letter-spacing: 12px;
         font-size: 24px;
-    }
-    .sub-text {
-        font-size: 14px;
-        color: #666;
+        font-weight: 700;
         text-align: center;
-        margin-bottom: 25px;
-        line-height: 1.4;
-    }
-    .email-highlight {
-        font-weight: bold;
-        color: #1a73e8;
-    }
-    .form-group {
-        margin-bottom: 16px;
-    }
-    .form-group label {
-        display: block;
-        margin-bottom: 6px;
-        font-weight: 600;
-        color: #333;
-        font-size: 14px;
-    }
-    .form-group input {
-        width: 100%;
-        padding: 10px 12px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        font-size: 14px;
-        box-sizing: border-box;
-    }
-    .form-group input:focus {
-        border-color: #1a73e8;
-        outline: none;
-    }
-    .otp-input {
-        font-size: 20px;
-        font-weight: bold;
-        letter-spacing: 5px;
-        text-align: center;
-    }
-    .btn-submit {
-        width: 100%;
-        padding: 12px;
-        background-color: #28a745;
-        border: none;
-        border-radius: 6px;
-        color: white;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        margin-top: 10px;
-    }
-    .btn-submit:hover {
-        background-color: #218838;
-    }
-    .alert {
-        padding: 12px;
-        border-radius: 6px;
-        margin-bottom: 20px;
-        font-size: 14px;
-    }
-    .alert-danger {
-        background-color: #f8d7da;
-        color: #721c24;
-        border: 1px solid #f5c6cb;
-    }
-    .back-link {
-        text-align: center;
-        margin-top: 20px;
-        font-size: 14px;
-    }
-    .back-link a {
-        color: #1a73e8;
-        text-decoration: none;
-        font-weight: 600;
+        font-family: monospace;
     }
 </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>ĐẶT LẠI MẬT KHẨU</h2>
-    <p class="sub-text">
-        Mã OTP đã được gửi đến email: <br/>
-        <span class="email-highlight">${email != null ? email : sessionScope.reset_email}</span>
-    </p>
+<div class="reset-card">
+    <div class="text-center mb-3">
+        <i class="bi bi-key-fill fs-1 text-warning"></i>
+        <h3 class="fw-bold text-dark mt-2 mb-1">ĐẶT LẠI MẬT KHẨU</h3>
+        <p class="text-muted small">
+            Nhập mã OTP đã gửi đến email:<br/>
+            <strong class="text-primary">${email != null ? email : sessionScope.reset_email}</strong>
+        </p>
+    </div>
 
     <c:if test="${not empty sessionScope.demo_otp}">
-        <div style="background: #e8f0fe; border: 2px dashed #1a73e8; border-radius: 8px; padding: 14px; margin-bottom: 20px; text-align: center;">
-            <div style="color: #1a73e8; font-weight: bold; font-size: 13px; margin-bottom: 6px;">🔔 MÃ OTP KHÔI PHỤC MẬT KHẨU CỦA BẠN:</div>
-            <div style="font-size: 30px; font-weight: bold; color: #d93025; letter-spacing: 6px; font-family: monospace;">${sessionScope.demo_otp}</div>
-            <div style="margin-top: 8px;">
-                <button type="button" onclick="document.getElementById('otp').value='${sessionScope.demo_otp}';" 
-                        style="background: #1a73e8; color: white; border: none; padding: 5px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;">
-                    📋 Tự động điền mã này
-                </button>
-            </div>
+        <div class="alert alert-info border border-primary border-2 p-3 mb-3 text-center">
+            <div class="small fw-bold text-primary mb-1"><i class="bi bi-bell-fill me-1"></i>MÃ OTP KHÔI PHỤC TEST NHANH:</div>
+            <div class="fs-2 fw-bold text-danger font-monospace letter-spacing-4">${sessionScope.demo_otp}</div>
+            <button type="button" class="btn btn-sm btn-primary mt-2" onclick="document.getElementById('otp').value='${sessionScope.demo_otp}';">
+                <i class="bi bi-clipboard-check me-1"></i>Tự động điền mã
+            </button>
         </div>
     </c:if>
 
     <c:if test="${not empty error}">
-        <div class="alert alert-danger">${error}</div>
+        <div class="alert alert-danger alert-dismissible fade show small" role="alert">
+            <i class="bi bi-exclamation-circle-fill me-2"></i>${error}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     </c:if>
 
-    <form action="${pageContext.request.contextPath}/reset-password" method="post">
+    <form action="${pageContext.request.contextPath}/reset-password" method="post" class="needs-validation" novalidate id="resetForm">
         <input type="hidden" name="email" value="${email != null ? email : sessionScope.reset_email}" />
 
-        <div class="form-group">
-            <label for="otp">Mã OTP (6 chữ số):</label>
-            <input type="text" id="otp" name="otp" value="${not empty sessionScope.demo_otp ? sessionScope.demo_otp : ''}" class="otp-input" maxlength="6" pattern="\d{6}" placeholder="------" required autofocus />
+        <div class="mb-3">
+            <label for="otp" class="form-label fw-semibold small">Mã OTP (6 chữ số) (*):</label>
+            <input type="text" id="otp" name="otp" 
+                   value="${not empty sessionScope.demo_otp ? sessionScope.demo_otp : ''}" 
+                   class="form-control otp-code-input" maxlength="6" pattern="^[0-9]{6}$" 
+                   placeholder="------" required autofocus />
+            <div class="invalid-feedback small text-center">Mã OTP phải gồm 6 chữ số.</div>
         </div>
 
-        <div class="form-group">
-            <label for="newPassword">Mật khẩu mới:</label>
-            <input type="password" id="newPassword" name="newPassword" placeholder="Nhập mật khẩu mới" required />
+        <div class="mb-3">
+            <label for="newPassword" class="form-label fw-semibold small">Mật khẩu mới (*):</label>
+            <input type="password" class="form-control" id="newPassword" name="newPassword" 
+                   minlength="6" required placeholder="Tối thiểu 6 ký tự" />
+            <div class="invalid-feedback small">Mật khẩu mới phải có ít nhất 6 ký tự.</div>
         </div>
 
-        <div class="form-group">
-            <label for="confirmPassword">Xác nhận mật khẩu mới:</label>
-            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Nhập lại mật khẩu mới" required />
+        <div class="mb-3">
+            <label for="confirmPassword" class="form-label fw-semibold small">Xác nhận mật khẩu (*):</label>
+            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" 
+                   required placeholder="Nhập lại mật khẩu mới" />
+            <div class="invalid-feedback small" id="confirmFeedback">Mật khẩu xác nhận không khớp.</div>
         </div>
 
-        <button type="submit" class="btn-submit">Xác Nhận Đổi Mật Khẩu</button>
+        <button type="submit" class="btn btn-warning w-100 py-2 fw-semibold mt-2 text-dark">
+            <i class="bi bi-check-circle me-1"></i>Xác Nhận Đổi Mật Khẩu
+        </button>
     </form>
 
-    <div class="back-link">
-        <a href="${pageContext.request.contextPath}/forgot-password">&larr; Gửi lại mã OTP</a> | <a href="${pageContext.request.contextPath}/login">Đăng nhập</a>
+    <div class="text-center mt-4 small">
+        <a href="${pageContext.request.contextPath}/forgot-password" class="text-decoration-none">Gửi lại mã OTP</a>
+        <span class="mx-1">•</span>
+        <a href="${pageContext.request.contextPath}/login" class="text-decoration-none fw-semibold">Đăng nhập</a>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(() => {
+    'use strict';
+    const form = document.getElementById('resetForm');
+    const pwd = document.getElementById('newPassword');
+    const confirmPwd = document.getElementById('confirmPassword');
+
+    form.addEventListener('submit', event => {
+        if (pwd.value !== confirmPwd.value) {
+            confirmPwd.setCustomValidity('Passwords must match');
+        } else {
+            confirmPwd.setCustomValidity('');
+        }
+
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    }, false);
+
+    confirmPwd.addEventListener('input', () => {
+        if (pwd.value !== confirmPwd.value) {
+            confirmPwd.setCustomValidity('Passwords must match');
+        } else {
+            confirmPwd.setCustomValidity('');
+        }
+    });
+})();
+</script>
 
 </body>
 </html>

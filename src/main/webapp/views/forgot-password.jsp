@@ -1,125 +1,84 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quên Mật Khẩu</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 <style>
     body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background-color: #f0f2f5;
         display: flex;
         justify-content: center;
         align-items: center;
         min-height: 100vh;
-        margin: 0;
+        padding: 20px 15px;
     }
-    .card {
-        background: #ffffff;
-        padding: 35px 40px;
-        border-radius: 10px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    .forgot-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
         width: 100%;
         max-width: 420px;
-    }
-    h2 {
-        margin-top: 0;
-        margin-bottom: 12px;
-        color: #1a73e8;
-        text-align: center;
-        font-size: 24px;
-    }
-    .sub-text {
-        font-size: 14px;
-        color: #666;
-        text-align: center;
-        margin-bottom: 25px;
-        line-height: 1.4;
-    }
-    .form-group {
-        margin-bottom: 18px;
-    }
-    .form-group label {
-        display: block;
-        margin-bottom: 6px;
-        font-weight: 600;
-        color: #333;
-        font-size: 14px;
-    }
-    .form-group input {
-        width: 100%;
-        padding: 10px 12px;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        font-size: 14px;
-        box-sizing: border-box;
-    }
-    .form-group input:focus {
-        border-color: #1a73e8;
-        outline: none;
-    }
-    .btn-submit {
-        width: 100%;
-        padding: 12px;
-        background-color: #1a73e8;
-        border: none;
-        border-radius: 6px;
-        color: white;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        margin-top: 10px;
-    }
-    .btn-submit:hover {
-        background-color: #1557b0;
-    }
-    .alert {
-        padding: 12px;
-        border-radius: 6px;
-        margin-bottom: 20px;
-        font-size: 14px;
-    }
-    .alert-danger {
-        background-color: #f8d7da;
-        color: #721c24;
-        border: 1px solid #f5c6cb;
-    }
-    .back-link {
-        text-align: center;
-        margin-top: 20px;
-        font-size: 14px;
-    }
-    .back-link a {
-        color: #1a73e8;
-        text-decoration: none;
-        font-weight: 600;
+        padding: 35px 30px;
     }
 </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>QUÊN MẬT KHẨU</h2>
-    <p class="sub-text">Nhập địa chỉ email đăng ký tài khoản của bạn để nhận mã OTP xác thực khôi phục mật khẩu.</p>
+<div class="forgot-card">
+    <div class="text-center mb-4">
+        <i class="bi bi-envelope-check-fill fs-1 text-primary"></i>
+        <h3 class="fw-bold text-dark mt-2 mb-1">QUÊN MẬT KHẨU</h3>
+        <p class="text-muted small">Nhập địa chỉ email đăng ký để nhận mã OTP khôi phục mật khẩu</p>
+    </div>
 
     <c:if test="${not empty error}">
-        <div class="alert alert-danger">${error}</div>
+        <div class="alert alert-danger alert-dismissible fade show small" role="alert">
+            <i class="bi bi-exclamation-circle-fill me-2"></i>${error}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     </c:if>
 
-    <form action="${pageContext.request.contextPath}/forgot-password" method="post">
-        <div class="form-group">
-            <label for="email">Email tài khoản:</label>
-            <input type="email" id="email" name="email" placeholder="example@gmail.com" required value="${param.email}" />
+    <form action="${pageContext.request.contextPath}/forgot-password" method="post" class="needs-validation" novalidate id="forgotForm">
+        <div class="mb-3">
+            <label for="email" class="form-label fw-semibold small">Địa chỉ Email (*):</label>
+            <div class="input-group has-validation">
+                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                <input type="email" class="form-control" id="email" name="email" required 
+                       pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                       value="${param.email}" placeholder="example@gmail.com" />
+                <div class="invalid-feedback small">Vui lòng nhập địa chỉ email hợp lệ.</div>
+            </div>
         </div>
 
-        <button type="submit" class="btn-submit">Gửi Mã OTP Xác Nhận</button>
+        <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mt-2">
+            <i class="bi bi-send-check me-1"></i>Gửi Mã OTP Xác Nhận
+        </button>
     </form>
 
-    <div class="back-link">
-        <a href="${pageContext.request.contextPath}/login">&larr; Quay lại trang đăng nhập</a>
+    <div class="text-center mt-4 small">
+        <a href="${pageContext.request.contextPath}/login" class="text-decoration-none fw-semibold">&larr; Quay lại trang đăng nhập</a>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(() => {
+    'use strict';
+    const form = document.getElementById('forgotForm');
+    form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    }, false);
+})();
+</script>
 
 </body>
 </html>

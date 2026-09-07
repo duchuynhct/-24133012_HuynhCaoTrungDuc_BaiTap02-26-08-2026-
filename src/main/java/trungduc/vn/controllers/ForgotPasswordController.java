@@ -69,6 +69,12 @@ public class ForgotPasswordController extends HttpServlet {
                 return;
             }
 
+            if (!email.trim().matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
+                req.setAttribute("error", "Địa chỉ email không đúng định dạng!");
+                req.getRequestDispatcher("/views/forgot-password.jsp").forward(req, resp);
+                return;
+            }
+
             boolean sent = userService.sendForgotPasswordOtp(email.trim());
 
             if (sent) {
@@ -103,6 +109,20 @@ public class ForgotPasswordController extends HttpServlet {
 
             if (otp == null || otp.trim().isEmpty() || newPassword == null || newPassword.trim().isEmpty()) {
                 req.setAttribute("error", "Vui lòng nhập đầy đủ mã OTP và mật khẩu mới!");
+                req.setAttribute("email", email);
+                req.getRequestDispatcher("/views/reset-password.jsp").forward(req, resp);
+                return;
+            }
+
+            if (!otp.trim().matches("^[0-9]{6}$")) {
+                req.setAttribute("error", "Mã OTP phải bao gồm đúng 6 chữ số!");
+                req.setAttribute("email", email);
+                req.getRequestDispatcher("/views/reset-password.jsp").forward(req, resp);
+                return;
+            }
+
+            if (newPassword.trim().length() < 6) {
+                req.setAttribute("error", "Mật khẩu mới phải chứa ít nhất 6 ký tự!");
                 req.setAttribute("email", email);
                 req.getRequestDispatcher("/views/reset-password.jsp").forward(req, resp);
                 return;

@@ -21,9 +21,9 @@ import trungduc.vn.services.impl.CategoryServiceImpl;
 import trungduc.vn.services.impl.ProductServiceImpl;
 
 @MultipartConfig(
-    fileSizeThreshold = 1024 * 1024 * 2, // 2MB
-    maxFileSize = 1024 * 1024 * 10,      // 10MB
-    maxRequestSize = 1024 * 1024 * 50    // 50MB
+    fileSizeThreshold = 1024 * 1024 * 2,  // 2MB
+    maxFileSize = 1024 * 1024 * 10,       // 10MB
+    maxRequestSize = 1024 * 1024 * 50     // 50MB
 )
 @WebServlet(urlPatterns = {
     "/admin/products",
@@ -91,10 +91,66 @@ public class ProductAdminController extends HttpServlet {
         if (url.contains("/admin/product/insert")) {
             String productName = req.getParameter("productname");
             String description = req.getParameter("description");
-            double price = Double.parseDouble(req.getParameter("price"));
-            int quantity = Integer.parseInt(req.getParameter("quantity"));
-            int categoryId = Integer.parseInt(req.getParameter("categoryid"));
-            int status = Integer.parseInt(req.getParameter("status"));
+            String priceStr = req.getParameter("price");
+            String quantityStr = req.getParameter("quantity");
+            String categoryIdStr = req.getParameter("categoryid");
+            String statusStr = req.getParameter("status");
+
+            // Server-side validation
+            if (productName == null || productName.trim().isEmpty() ||
+                priceStr == null || priceStr.trim().isEmpty() ||
+                quantityStr == null || quantityStr.trim().isEmpty() ||
+                categoryIdStr == null || categoryIdStr.trim().isEmpty()) {
+                req.setAttribute("error", "Vui lòng nhập đầy đủ các trường thông tin bắt buộc!");
+                req.setAttribute("categories", categoryService.findAll());
+                req.getRequestDispatcher("/views/admin/product-add.jsp").forward(req, resp);
+                return;
+            }
+
+            if (productName.trim().length() < 3) {
+                req.setAttribute("error", "Tên sản phẩm phải có ít nhất 3 ký tự!");
+                req.setAttribute("categories", categoryService.findAll());
+                req.getRequestDispatcher("/views/admin/product-add.jsp").forward(req, resp);
+                return;
+            }
+
+            double price;
+            int quantity;
+            int categoryId;
+            int status = 1;
+            try {
+                price = Double.parseDouble(priceStr);
+                quantity = Integer.parseInt(quantityStr);
+                categoryId = Integer.parseInt(categoryIdStr);
+                if (statusStr != null) status = Integer.parseInt(statusStr);
+            } catch (NumberFormatException e) {
+                req.setAttribute("error", "Giá bán hoặc số lượng không đúng định dạng số hợp lệ!");
+                req.setAttribute("categories", categoryService.findAll());
+                req.getRequestDispatcher("/views/admin/product-add.jsp").forward(req, resp);
+                return;
+            }
+
+            if (price <= 0) {
+                req.setAttribute("error", "Giá bán sản phẩm phải lớn hơn 0 VNĐ!");
+                req.setAttribute("categories", categoryService.findAll());
+                req.getRequestDispatcher("/views/admin/product-add.jsp").forward(req, resp);
+                return;
+            }
+
+            if (quantity < 0) {
+                req.setAttribute("error", "Số lượng sản phẩm tồn kho không được âm!");
+                req.setAttribute("categories", categoryService.findAll());
+                req.getRequestDispatcher("/views/admin/product-add.jsp").forward(req, resp);
+                return;
+            }
+
+            Category category = categoryService.findById(categoryId);
+            if (category == null) {
+                req.setAttribute("error", "Danh mục đã chọn không tồn tại trong hệ thống!");
+                req.setAttribute("categories", categoryService.findAll());
+                req.getRequestDispatcher("/views/admin/product-add.jsp").forward(req, resp);
+                return;
+            }
 
             // Xử lý upload ảnh an toàn
             String finalFileName = "";
@@ -103,6 +159,13 @@ public class ProductAdminController extends HttpServlet {
                 if (filePart != null && filePart.getSize() > 0) {
                     String submittedName = filePart.getSubmittedFileName();
                     if (submittedName != null && !submittedName.trim().isEmpty()) {
+                        String lower = submittedName.toLowerCase();
+                        if (!lower.endsWith(".jpg") && !lower.endsWith(".jpeg") && !lower.endsWith(".png") && !lower.endsWith(".webp") && !lower.endsWith(".gif")) {
+                            req.setAttribute("error", "Ảnh sản phẩm phải có định dạng JPG, JPEG, PNG, WEBP hoặc GIF!");
+                            req.setAttribute("categories", categoryService.findAll());
+                            req.getRequestDispatcher("/views/admin/product-add.jsp").forward(req, resp);
+                            return;
+                        }
                         String fileName = Paths.get(submittedName).getFileName().toString();
                         finalFileName = System.currentTimeMillis() + "_" + fileName;
                         filePart.write(uploadPath + File.separator + finalFileName);
@@ -112,11 +175,9 @@ public class ProductAdminController extends HttpServlet {
                 e.printStackTrace();
             }
 
-            Category category = categoryService.findById(categoryId);
-
             Product product = new Product();
-            product.setProductName(productName);
-            product.setDescription(description);
+            product.setProductName(productName.trim());
+            product.setDescription(description != null ? description.trim() : "");
             product.setPrice(price);
             product.setQuantity(quantity);
             product.setImages(finalFileName);
@@ -131,11 +192,68 @@ public class ProductAdminController extends HttpServlet {
             int id = Integer.parseInt(req.getParameter("productid"));
             String productName = req.getParameter("productname");
             String description = req.getParameter("description");
-            double price = Double.parseDouble(req.getParameter("price"));
-            int quantity = Integer.parseInt(req.getParameter("quantity"));
-            int categoryId = Integer.parseInt(req.getParameter("categoryid"));
-            int status = Integer.parseInt(req.getParameter("status"));
+            String priceStr = req.getParameter("price");
+            String quantityStr = req.getParameter("quantity");
+            String categoryIdStr = req.getParameter("categoryid");
+            String statusStr = req.getParameter("status");
             String oldImage = req.getParameter("oldImage");
+
+            Product currentProduct = productService.findById(id);
+
+            // Server-side validation
+            if (productName == null || productName.trim().isEmpty() ||
+                priceStr == null || priceStr.trim().isEmpty() ||
+                quantityStr == null || quantityStr.trim().isEmpty() ||
+                categoryIdStr == null || categoryIdStr.trim().isEmpty()) {
+                req.setAttribute("error", "Vui lòng nhập đầy đủ các trường thông tin bắt buộc!");
+                req.setAttribute("product", currentProduct);
+                req.setAttribute("categories", categoryService.findAll());
+                req.getRequestDispatcher("/views/admin/product-edit.jsp").forward(req, resp);
+                return;
+            }
+
+            if (productName.trim().length() < 3) {
+                req.setAttribute("error", "Tên sản phẩm phải có ít nhất 3 ký tự!");
+                req.setAttribute("product", currentProduct);
+                req.setAttribute("categories", categoryService.findAll());
+                req.getRequestDispatcher("/views/admin/product-edit.jsp").forward(req, resp);
+                return;
+            }
+
+            double price;
+            int quantity;
+            int categoryId;
+            int status = 1;
+            try {
+                price = Double.parseDouble(priceStr);
+                quantity = Integer.parseInt(quantityStr);
+                categoryId = Integer.parseInt(categoryIdStr);
+                if (statusStr != null) status = Integer.parseInt(statusStr);
+            } catch (NumberFormatException e) {
+                req.setAttribute("error", "Giá bán hoặc số lượng không đúng định dạng số hợp lệ!");
+                req.setAttribute("product", currentProduct);
+                req.setAttribute("categories", categoryService.findAll());
+                req.getRequestDispatcher("/views/admin/product-edit.jsp").forward(req, resp);
+                return;
+            }
+
+            if (price <= 0) {
+                req.setAttribute("error", "Giá bán sản phẩm phải lớn hơn 0 VNĐ!");
+                req.setAttribute("product", currentProduct);
+                req.setAttribute("categories", categoryService.findAll());
+                req.getRequestDispatcher("/views/admin/product-edit.jsp").forward(req, resp);
+                return;
+            }
+
+            if (quantity < 0) {
+                req.setAttribute("error", "Số lượng sản phẩm tồn kho không được âm!");
+                req.setAttribute("product", currentProduct);
+                req.setAttribute("categories", categoryService.findAll());
+                req.getRequestDispatcher("/views/admin/product-edit.jsp").forward(req, resp);
+                return;
+            }
+
+            Category category = categoryService.findById(categoryId);
 
             // Xử lý upload ảnh mới nếu có chọn
             String finalFileName = oldImage;
@@ -144,6 +262,14 @@ public class ProductAdminController extends HttpServlet {
                 if (filePart != null && filePart.getSize() > 0) {
                     String submittedName = filePart.getSubmittedFileName();
                     if (submittedName != null && !submittedName.trim().isEmpty()) {
+                        String lower = submittedName.toLowerCase();
+                        if (!lower.endsWith(".jpg") && !lower.endsWith(".jpeg") && !lower.endsWith(".png") && !lower.endsWith(".webp") && !lower.endsWith(".gif")) {
+                            req.setAttribute("error", "Ảnh sản phẩm phải có định dạng JPG, JPEG, PNG, WEBP hoặc GIF!");
+                            req.setAttribute("product", currentProduct);
+                            req.setAttribute("categories", categoryService.findAll());
+                            req.getRequestDispatcher("/views/admin/product-edit.jsp").forward(req, resp);
+                            return;
+                        }
                         String fileName = Paths.get(submittedName).getFileName().toString();
                         finalFileName = System.currentTimeMillis() + "_" + fileName;
                         filePart.write(uploadPath + File.separator + finalFileName);
@@ -153,18 +279,15 @@ public class ProductAdminController extends HttpServlet {
                 e.printStackTrace();
             }
 
-            Category category = categoryService.findById(categoryId);
-
-            Product product = productService.findById(id);
-            if (product != null) {
-                product.setProductName(productName);
-                product.setDescription(description);
-                product.setPrice(price);
-                product.setQuantity(quantity);
-                product.setImages(finalFileName);
-                product.setStatus(status);
-                product.setCategory(category);
-                productService.update(product);
+            if (currentProduct != null) {
+                currentProduct.setProductName(productName.trim());
+                currentProduct.setDescription(description != null ? description.trim() : "");
+                currentProduct.setPrice(price);
+                currentProduct.setQuantity(quantity);
+                currentProduct.setImages(finalFileName);
+                currentProduct.setStatus(status);
+                currentProduct.setCategory(category);
+                productService.update(currentProduct);
             }
 
             resp.sendRedirect(req.getContextPath() + "/admin/products");

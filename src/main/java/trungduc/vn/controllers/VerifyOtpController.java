@@ -94,6 +94,13 @@ public class VerifyOtpController extends HttpServlet {
             return;
         }
 
+        if (!otp.trim().matches("^[0-9]{6}$")) {
+            req.setAttribute("error", "Mã OTP phải bao gồm đúng 6 chữ số!");
+            req.setAttribute("email", email);
+            req.getRequestDispatcher("/views/verify-otp.jsp").forward(req, resp);
+            return;
+        }
+
         int result = userService.verifyOtp(email.trim(), otp.trim());
 
         switch (result) {
