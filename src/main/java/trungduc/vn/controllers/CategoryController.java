@@ -83,14 +83,20 @@ public class CategoryController extends HttpServlet {
             String categoryName = req.getParameter("categoryname");
             int status = Integer.parseInt(req.getParameter("status"));
 
-            // Xử lý upload ảnh
-            Part filePart = req.getPart("images");
-            String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
+            // Xử lý upload ảnh an toàn
             String finalFileName = "";
-
-            if (fileName != null && !fileName.isEmpty()) {
-                finalFileName = System.currentTimeMillis() + "_" + fileName;
-                filePart.write(uploadPath + File.separator + finalFileName);
+            try {
+                Part filePart = req.getPart("images");
+                if (filePart != null && filePart.getSize() > 0) {
+                    String submittedName = filePart.getSubmittedFileName();
+                    if (submittedName != null && !submittedName.trim().isEmpty()) {
+                        String fileName = Paths.get(submittedName).getFileName().toString();
+                        finalFileName = System.currentTimeMillis() + "_" + fileName;
+                        filePart.write(uploadPath + File.separator + finalFileName);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
             Category category = new Category();
@@ -108,13 +114,19 @@ public class CategoryController extends HttpServlet {
             String oldImage = req.getParameter("oldImage");
 
             // Xử lý upload ảnh mới nếu có chọn
-            Part filePart = req.getPart("images");
-            String fileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
             String finalFileName = oldImage;
-
-            if (fileName != null && !fileName.isEmpty()) {
-                finalFileName = System.currentTimeMillis() + "_" + fileName;
-                filePart.write(uploadPath + File.separator + finalFileName);
+            try {
+                Part filePart = req.getPart("images");
+                if (filePart != null && filePart.getSize() > 0) {
+                    String submittedName = filePart.getSubmittedFileName();
+                    if (submittedName != null && !submittedName.trim().isEmpty()) {
+                        String fileName = Paths.get(submittedName).getFileName().toString();
+                        finalFileName = System.currentTimeMillis() + "_" + fileName;
+                        filePart.write(uploadPath + File.separator + finalFileName);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
             Category category = new Category();

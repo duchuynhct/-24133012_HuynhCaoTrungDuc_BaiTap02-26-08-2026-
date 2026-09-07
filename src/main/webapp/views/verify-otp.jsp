@@ -109,6 +109,19 @@
         <span class="email-highlight">${email != null ? email : sessionScope.otp_email}</span>
     </p>
 
+    <c:if test="${not empty sessionScope.demo_otp}">
+        <div style="background: #e8f0fe; border: 2px dashed #1a73e8; border-radius: 8px; padding: 14px; margin-bottom: 20px; text-align: center;">
+            <div style="color: #1a73e8; font-weight: bold; font-size: 13px; margin-bottom: 6px;">🔔 MÃ OTP KÍCH HOẠT CỦA BẠN:</div>
+            <div style="font-size: 32px; font-weight: bold; color: #d93025; letter-spacing: 6px; font-family: monospace;">${sessionScope.demo_otp}</div>
+            <div style="margin-top: 8px;">
+                <button type="button" onclick="document.getElementById('otpInput').value='${sessionScope.demo_otp}';" 
+                        style="background: #1a73e8; color: white; border: none; padding: 5px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;">
+                    📋 Tự động điền mã này
+                </button>
+            </div>
+        </div>
+    </c:if>
+
     <c:if test="${not empty error}">
         <div class="alert alert-danger">${error}</div>
     </c:if>
@@ -120,7 +133,7 @@
         <input type="hidden" name="email" value="${email != null ? email : sessionScope.otp_email}" />
         
         <div>
-            <input type="text" name="otp" class="otp-input" maxlength="6" pattern="\d{6}" placeholder="------" autofocus required />
+            <input type="text" id="otpInput" name="otp" value="${not empty sessionScope.demo_otp ? sessionScope.demo_otp : ''}" class="otp-input" maxlength="6" pattern="\d{6}" placeholder="------" autofocus required />
             <div style="font-size: 12px; color: #888; margin-top: 8px;">(Mã gồm 6 chữ số, hiệu lực trong vòng 5 phút)</div>
         </div>
 

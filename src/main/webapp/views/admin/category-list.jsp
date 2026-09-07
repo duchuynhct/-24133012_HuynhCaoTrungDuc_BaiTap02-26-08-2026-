@@ -18,30 +18,10 @@
 </style>
 </head>
 <body>
-    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e0e0e0; padding-bottom: 15px; margin-bottom: 20px;">
-        <div>
-            <h2 style="margin: 0; color: #2c3e50;">QUẢN LÝ DANH MỤC</h2>
-            <div style="margin-top: 8px;">
-                <a href="${pageContext.request.contextPath}/admin/categories" style="margin-right: 15px; text-decoration: none; color: #28a745; font-weight: 600;">Quản lý Danh mục</a>
-                <a href="${pageContext.request.contextPath}/admin/products" style="margin-right: 15px; text-decoration: none; color: #1a73e8; font-weight: 600;">Quản lý Sản phẩm</a>
-                <a href="${pageContext.request.contextPath}/home" target="_blank" style="margin-right: 15px; text-decoration: none; color: #555; font-weight: 600;">Xem Trang chủ</a>
-                <a href="${pageContext.request.contextPath}/product" target="_blank" style="text-decoration: none; color: #555; font-weight: 600;">Xem Trang /product</a>
-            </div>
-        </div>
-        <div>
-            <c:choose>
-                <c:when test="${not empty sessionScope.account}">
-                    <span>Xin chào, <strong>${sessionScope.account.fullname}</strong>!</span>
-                    <a href="${pageContext.request.contextPath}/logout" class="btn btn-delete" style="margin-left: 10px;">Đăng xuất</a>
-                </c:when>
-                <c:otherwise>
-                    <a href="${pageContext.request.contextPath}/login" class="btn" style="background: #1a73e8; margin-right: 5px;">Đăng nhập</a>
-                    <a href="${pageContext.request.contextPath}/register" class="btn" style="background: #6c757d;">Đăng ký</a>
-                </c:otherwise>
-            </c:choose>
-        </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e0e0e0; padding-bottom: 12px; margin-bottom: 20px;">
+        <h2 style="margin: 0; color: #2c3e50;">📁 QUẢN LÝ DANH MỤC</h2>
+        <a href="${pageContext.request.contextPath}/admin/category/add" class="btn btn-add">+ Thêm danh mục mới</a>
     </div>
-    <a href="${pageContext.request.contextPath}/admin/category/add" class="btn btn-add">+ Thêm danh mục mới</a>
     <table>
         <thead>
             <tr>

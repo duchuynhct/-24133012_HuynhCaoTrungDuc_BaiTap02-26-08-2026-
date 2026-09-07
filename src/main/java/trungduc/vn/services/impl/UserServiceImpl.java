@@ -144,4 +144,19 @@ public class UserServiceImpl implements IUserService {
     public boolean checkExistEmail(String email) {
         return userDao.checkExistEmail(email);
     }
+
+    @Override
+    public User updateProfile(String username, String fullname, String phone, String images) {
+        User user = userDao.findById(username);
+        if (user != null) {
+            user.setFullname(fullname != null ? fullname.trim() : "");
+            user.setPhone(phone != null ? phone.trim() : null);
+            if (images != null && !images.trim().isEmpty()) {
+                user.setImages(images.trim());
+            }
+            userDao.update(user);
+            return user;
+        }
+        return null;
+    }
 }

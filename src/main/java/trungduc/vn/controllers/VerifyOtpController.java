@@ -37,6 +37,10 @@ public class VerifyOtpController extends HttpServlet {
             if (email != null && !email.trim().isEmpty()) {
                 boolean resent = userService.resendOtp(email);
                 if (resent) {
+                    trungduc.vn.entity.User userWithOtp = userService.findByEmail(email);
+                    if (userWithOtp != null && userWithOtp.getOtpCode() != null) {
+                        session.setAttribute("demo_otp", userWithOtp.getOtpCode());
+                    }
                     req.setAttribute("message", "Mã OTP mới đã được gửi tới email: " + email);
                 } else {
                     req.setAttribute("error", "Không thể gửi lại mã OTP hoặc tài khoản đã được kích hoạt!");
@@ -52,6 +56,12 @@ public class VerifyOtpController extends HttpServlet {
         if (email == null || email.trim().isEmpty()) {
             resp.sendRedirect(req.getContextPath() + "/register");
             return;
+        }
+
+        // Lấy lại mã OTP hiện tại của user để hiển thị hỗ trợ
+        trungduc.vn.entity.User currentOtpUser = userService.findByEmail(email);
+        if (currentOtpUser != null && currentOtpUser.getOtpCode() != null) {
+            session.setAttribute("demo_otp", currentOtpUser.getOtpCode());
         }
 
         req.setAttribute("email", email);
@@ -89,6 +99,7 @@ public class VerifyOtpController extends HttpServlet {
         switch (result) {
             case 1:
                 session.removeAttribute("otp_email");
+                session.removeAttribute("demo_otp");
                 session.setAttribute("message", "Kích hoạt tài khoản thành công! Bạn có thể đăng nhập ngay bây giờ.");
                 resp.sendRedirect(req.getContextPath() + "/login");
                 break;

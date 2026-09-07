@@ -116,6 +116,19 @@
         <span class="email-highlight">${email != null ? email : sessionScope.reset_email}</span>
     </p>
 
+    <c:if test="${not empty sessionScope.demo_otp}">
+        <div style="background: #e8f0fe; border: 2px dashed #1a73e8; border-radius: 8px; padding: 14px; margin-bottom: 20px; text-align: center;">
+            <div style="color: #1a73e8; font-weight: bold; font-size: 13px; margin-bottom: 6px;">🔔 MÃ OTP KHÔI PHỤC MẬT KHẨU CỦA BẠN:</div>
+            <div style="font-size: 30px; font-weight: bold; color: #d93025; letter-spacing: 6px; font-family: monospace;">${sessionScope.demo_otp}</div>
+            <div style="margin-top: 8px;">
+                <button type="button" onclick="document.getElementById('otp').value='${sessionScope.demo_otp}';" 
+                        style="background: #1a73e8; color: white; border: none; padding: 5px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;">
+                    📋 Tự động điền mã này
+                </button>
+            </div>
+        </div>
+    </c:if>
+
     <c:if test="${not empty error}">
         <div class="alert alert-danger">${error}</div>
     </c:if>
@@ -125,7 +138,7 @@
 
         <div class="form-group">
             <label for="otp">Mã OTP (6 chữ số):</label>
-            <input type="text" id="otp" name="otp" class="otp-input" maxlength="6" pattern="\d{6}" placeholder="------" required autofocus />
+            <input type="text" id="otp" name="otp" value="${not empty sessionScope.demo_otp ? sessionScope.demo_otp : ''}" class="otp-input" maxlength="6" pattern="\d{6}" placeholder="------" required autofocus />
         </div>
 
         <div class="form-group">
