@@ -65,8 +65,15 @@ public class ProfileController extends HttpServlet {
         String phone = req.getParameter("phone");
         String oldImage = req.getParameter("oldImage");
 
-        if (fullname == null || fullname.trim().isEmpty()) {
-            req.setAttribute("error", "Họ và tên không được để trống!");
+        if (fullname == null || fullname.trim().isEmpty() || fullname.trim().length() < 2) {
+            req.setAttribute("error", "Họ và tên không được để trống và phải có ít nhất 2 ký tự!");
+            req.setAttribute("user", currentUser);
+            req.getRequestDispatcher("/views/web/profile.jsp").forward(req, resp);
+            return;
+        }
+
+        if (phone != null && !phone.trim().isEmpty() && !phone.trim().matches("^(0[3|5|7|8|9])[0-9]{8}$")) {
+            req.setAttribute("error", "Số điện thoại không đúng định dạng mạng viễn thông Việt Nam (10 chữ số, bắt đầu 03, 05, 07, 08, 09)!");
             req.setAttribute("user", currentUser);
             req.getRequestDispatcher("/views/web/profile.jsp").forward(req, resp);
             return;
@@ -79,13 +86,21 @@ public class ProfileController extends HttpServlet {
             uploadDir.mkdir();
         }
 
-        // Xử lý upload file ảnh multipart
+        // Xử lý upload file ảnh multipart an toàn
         String finalFileName = oldImage;
         try {
             Part filePart = req.getPart("images");
             if (filePart != null && filePart.getSize() > 0) {
-                String submittedFileName = Paths.get(filePart.getSubmittedFileName()).getFileName().toString();
-                if (submittedFileName != null && !submittedFileName.trim().isEmpty()) {
+                String submitted = filePart.getSubmittedFileName();
+                if (submitted != null && !submitted.trim().isEmpty()) {
+                    String lower = submitted.toLowerCase();
+                    if (!lower.endsWith(".jpg") && !lower.endsWith(".jpeg") && !lower.endsWith(".png") && !lower.endsWith(".webp") && !lower.endsWith(".gif")) {
+                        req.setAttribute("error", "Chỉ chấp nhận file ảnh định dạng JPG, JPEG, PNG, WEBP hoặc GIF!");
+                        req.setAttribute("user", currentUser);
+                        req.getRequestDispatcher("/views/web/profile.jsp").forward(req, resp);
+                        return;
+                    }
+                    String submittedFileName = Paths.get(submitted).getFileName().toString();
                     finalFileName = System.currentTimeMillis() + "_" + submittedFileName;
                     filePart.write(uploadPath + File.separator + finalFileName);
                 }

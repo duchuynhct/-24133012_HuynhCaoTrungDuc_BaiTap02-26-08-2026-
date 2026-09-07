@@ -17,9 +17,9 @@ import trungduc.vn.services.ICategoryService;
 import trungduc.vn.services.impl.CategoryServiceImpl;
 
 @MultipartConfig(
-    fileSizeThreshold = 1024 * 1024 * 2, // 2MB
-    maxFileSize = 1024 * 1024 * 10,      // 10MB
-    maxRequestSize = 1024 * 1024 * 50    // 50MB
+    fileSizeThreshold = 1024 * 1024 * 2,  // 2MB
+    maxFileSize = 1024 * 1024 * 10,       // 10MB
+    maxRequestSize = 1024 * 1024 * 50     // 50MB
 )
 @WebServlet(urlPatterns = {
     "/admin/categories",
@@ -27,7 +27,8 @@ import trungduc.vn.services.impl.CategoryServiceImpl;
     "/admin/category/insert",
     "/admin/category/edit",
     "/admin/category/update",
-    "/admin/category/delete"
+    "/admin/category/delete",
+    "/admin/category/search"
 })
 public class CategoryController extends HttpServlet {
 
@@ -81,7 +82,20 @@ public class CategoryController extends HttpServlet {
 
         if (url.contains("/admin/category/insert")) {
             String categoryName = req.getParameter("categoryname");
-            int status = Integer.parseInt(req.getParameter("status"));
+            String statusStr = req.getParameter("status");
+            int status = 1;
+            if (statusStr != null) {
+                try {
+                    status = Integer.parseInt(statusStr);
+                } catch (NumberFormatException ignored) {}
+            }
+
+            // Server-side validation
+            if (categoryName == null || categoryName.trim().isEmpty() || categoryName.trim().length() < 2) {
+                req.setAttribute("error", "Tên danh mục không được để trống và phải từ 2 ký tự trở lên!");
+                req.getRequestDispatcher("/views/admin/category-add.jsp").forward(req, resp);
+                return;
+            }
 
             // Xử lý upload ảnh an toàn
             String finalFileName = "";
@@ -90,6 +104,12 @@ public class CategoryController extends HttpServlet {
                 if (filePart != null && filePart.getSize() > 0) {
                     String submittedName = filePart.getSubmittedFileName();
                     if (submittedName != null && !submittedName.trim().isEmpty()) {
+                        String lower = submittedName.toLowerCase();
+                        if (!lower.endsWith(".jpg") && !lower.endsWith(".jpeg") && !lower.endsWith(".png") && !lower.endsWith(".webp") && !lower.endsWith(".gif")) {
+                            req.setAttribute("error", "Ảnh danh mục phải có định dạng JPG, JPEG, PNG, WEBP hoặc GIF!");
+                            req.getRequestDispatcher("/views/admin/category-add.jsp").forward(req, resp);
+                            return;
+                        }
                         String fileName = Paths.get(submittedName).getFileName().toString();
                         finalFileName = System.currentTimeMillis() + "_" + fileName;
                         filePart.write(uploadPath + File.separator + finalFileName);
@@ -100,7 +120,7 @@ public class CategoryController extends HttpServlet {
             }
 
             Category category = new Category();
-            category.setCategoryname(categoryName);
+            category.setCategoryname(categoryName.trim());
             category.setImages(finalFileName);
             category.setStatus(status);
 
@@ -110,8 +130,25 @@ public class CategoryController extends HttpServlet {
         } else if (url.contains("/admin/category/update")) {
             int id = Integer.parseInt(req.getParameter("categoryid"));
             String categoryName = req.getParameter("categoryname");
-            int status = Integer.parseInt(req.getParameter("status"));
+            String statusStr = req.getParameter("status");
             String oldImage = req.getParameter("oldImage");
+
+            Category currentCate = categoryService.findById(id);
+
+            int status = 1;
+            if (statusStr != null) {
+                try {
+                    status = Integer.parseInt(statusStr);
+                } catch (NumberFormatException ignored) {}
+            }
+
+            // Server-side validation
+            if (categoryName == null || categoryName.trim().isEmpty() || categoryName.trim().length() < 2) {
+                req.setAttribute("error", "Tên danh mục không được để trống và phải từ 2 ký tự trở lên!");
+                req.setAttribute("cate", currentCate);
+                req.getRequestDispatcher("/views/admin/category-edit.jsp").forward(req, resp);
+                return;
+            }
 
             // Xử lý upload ảnh mới nếu có chọn
             String finalFileName = oldImage;
@@ -120,6 +157,13 @@ public class CategoryController extends HttpServlet {
                 if (filePart != null && filePart.getSize() > 0) {
                     String submittedName = filePart.getSubmittedFileName();
                     if (submittedName != null && !submittedName.trim().isEmpty()) {
+                        String lower = submittedName.toLowerCase();
+                        if (!lower.endsWith(".jpg") && !lower.endsWith(".jpeg") && !lower.endsWith(".png") && !lower.endsWith(".webp") && !lower.endsWith(".gif")) {
+                            req.setAttribute("error", "Ảnh danh mục phải có định dạng JPG, JPEG, PNG, WEBP hoặc GIF!");
+                            req.setAttribute("cate", currentCate);
+                            req.getRequestDispatcher("/views/admin/category-edit.jsp").forward(req, resp);
+                            return;
+                        }
                         String fileName = Paths.get(submittedName).getFileName().toString();
                         finalFileName = System.currentTimeMillis() + "_" + fileName;
                         filePart.write(uploadPath + File.separator + finalFileName);
@@ -131,7 +175,7 @@ public class CategoryController extends HttpServlet {
 
             Category category = new Category();
             category.setCategoryid(id);
-            category.setCategoryname(categoryName);
+            category.setCategoryname(categoryName.trim());
             category.setImages(finalFileName);
             category.setStatus(status);
 
