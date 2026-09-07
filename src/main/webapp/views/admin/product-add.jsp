@@ -5,85 +5,86 @@
 <head>
 <meta charset="UTF-8">
 <title>Thêm Sản Phẩm Mới</title>
-<style>
-    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 30px; background-color: #fdfdfd; }
-    .form-card {
-        max-width: 650px;
-        margin: 0 auto;
-        background: white;
-        padding: 30px;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    h2 { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom: 12px; }
-    .form-group { margin-bottom: 16px; }
-    .form-group label { display: block; margin-bottom: 6px; font-weight: 600; color: #333; }
-    .form-group input, .form-group select, .form-group textarea {
-        width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px;
-    }
-    .btn { padding: 10px 18px; border-radius: 4px; color: white; text-decoration: none; display: inline-block; cursor: pointer; border: none; font-size: 15px; font-weight: 600; }
-    .btn-save { background: #28a745; margin-right: 10px; }
-    .btn-cancel { background: #6c757d; }
-    .form-row { display: flex; gap: 15px; }
-    .form-row .form-group { flex: 1; }
-</style>
 </head>
 <body>
 
-<div class="form-card">
-    <h2>THÊM SẢN PHẨM MỚI</h2>
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <h3 class="fw-bold text-dark m-0"><i class="bi bi-box-seam text-success me-2"></i>THÊM SẢN PHẨM MỚI</h3>
+    <a href="${pageContext.request.contextPath}/admin/products" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>Quay lại danh sách
+    </a>
+</div>
 
-    <form action="${pageContext.request.contextPath}/admin/product/insert" method="post" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="productname">Tên sản phẩm (*):</label>
-            <input type="text" id="productname" name="productname" required placeholder="Nhập tên sản phẩm" />
-        </div>
+<c:if test="${not empty error}">
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>${error}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</c:if>
 
-        <div class="form-group">
-            <label for="categoryid">Thuộc Danh Mục (*):</label>
-            <select id="categoryid" name="categoryid" required>
-                <option value="">-- Chọn danh mục --</option>
-                <c:forEach items="${categories}" var="c">
-                    <option value="${c.categoryid}">${c.categoryname}</option>
-                </c:forEach>
-            </select>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                <label for="price">Giá bán (VNĐ) (*):</label>
-                <input type="number" id="price" name="price" required min="0" step="1000" placeholder="50000" />
+<div class="row">
+    <div class="col-lg-8">
+        <form action="${pageContext.request.contextPath}/admin/product/insert" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+            <div class="mb-3">
+                <label for="productname" class="form-label fw-bold">Tên sản phẩm (*):</label>
+                <input type="text" class="form-control" id="productname" name="productname" required minlength="3" maxlength="200" placeholder="Nhập tên sản phẩm" value="${param.productname}">
+                <div class="invalid-feedback">Vui lòng nhập tên sản phẩm (từ 3 đến 200 ký tự).</div>
             </div>
 
-            <div class="form-group">
-                <label for="quantity">Số lượng kho (*):</label>
-                <input type="number" id="quantity" name="quantity" required min="0" value="10" />
+            <div class="mb-3">
+                <label for="categoryid" class="form-label fw-bold">Thuộc Danh Mục (*):</label>
+                <select class="form-select" id="categoryid" name="categoryid" required>
+                    <option value="">-- Chọn danh mục --</option>
+                    <c:forEach items="${categories}" var="c">
+                        <option value="${c.categoryid}" ${param.categoryid == c.categoryid ? 'selected' : ''}>${c.categoryname}</option>
+                    </c:forEach>
+                </select>
+                <div class="invalid-feedback">Vui lòng chọn danh mục cho sản phẩm.</div>
             </div>
-        </div>
 
-        <div class="form-group">
-            <label for="images">Hình ảnh đại diện sản phẩm:</label>
-            <input type="file" id="images" name="images" accept="image/*" />
-        </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="price" class="form-label fw-bold">Giá bán (VNĐ) (*):</label>
+                    <input type="number" class="form-control" id="price" name="price" required min="1000" step="1000" placeholder="50000" value="${param.price}">
+                    <div class="invalid-feedback">Giá bán phải là số dương (tối thiểu 1.000 VNĐ).</div>
+                </div>
 
-        <div class="form-group">
-            <label for="status">Trạng thái:</label>
-            <select id="status" name="status">
-                <option value="1">Hoạt động / Còn hàng</option>
-                <option value="0">Tạm khóa / Hết hàng</option>
-            </select>
-        </div>
+                <div class="col-md-6 mb-3">
+                    <label for="quantity" class="form-label fw-bold">Số lượng kho (*):</label>
+                    <input type="number" class="form-control" id="quantity" name="quantity" required min="0" step="1" placeholder="10" value="${not empty param.quantity ? param.quantity : '10'}">
+                    <div class="invalid-feedback">Số lượng tồn kho phải là số nguyên không âm.</div>
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label for="description">Mô tả chi tiết sản phẩm:</label>
-            <textarea id="description" name="description" rows="4" placeholder="Nhập thông tin chi tiết về sản phẩm..."></textarea>
-        </div>
+            <div class="mb-3">
+                <label for="images" class="form-label fw-bold">Hình ảnh sản phẩm:</label>
+                <input type="file" class="form-control" id="images" name="images" accept="image/*">
+                <div class="form-text">Hỗ trợ: JPG, PNG, WEBP (Tối đa 5MB)</div>
+            </div>
 
-        <div style="margin-top: 20px;">
-            <button type="submit" class="btn btn-save">Lưu Sản Phẩm</button>
-            <a href="${pageContext.request.contextPath}/admin/products" class="btn btn-cancel">Hủy Bỏ</a>
-        </div>
-    </form>
+            <div class="mb-3">
+                <label for="status" class="form-label fw-bold">Trạng thái:</label>
+                <select class="form-select" id="status" name="status">
+                    <option value="1" selected>Hoạt động / Còn hàng</option>
+                    <option value="0">Tạm khóa / Hết hàng</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="description" class="form-label fw-bold">Mô tả chi tiết sản phẩm:</label>
+                <textarea class="form-control" id="description" name="description" rows="4" placeholder="Nhập thông tin chi tiết về tính năng, thông số sản phẩm...">${param.description}</textarea>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-success px-4 fw-semibold">
+                    <i class="bi bi-save me-1"></i>Lưu Sản Phẩm
+                </button>
+                <a href="${pageContext.request.contextPath}/admin/products" class="btn btn-secondary px-3">
+                    Hủy bỏ
+                </a>
+            </div>
+        </form>
+    </div>
 </div>
 
 </body>

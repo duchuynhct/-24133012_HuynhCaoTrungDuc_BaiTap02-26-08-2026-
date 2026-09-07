@@ -6,93 +6,82 @@
 <head>
 <meta charset="UTF-8">
 <title>Quản lý Sản phẩm (Admin)</title>
-<style>
-    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 30px; background-color: #fdfdfd; }
-    .header-bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 2px solid #e0e0e0;
-        padding-bottom: 15px;
-        margin-bottom: 25px;
-    }
-    .nav-links a {
-        margin-right: 15px;
-        text-decoration: none;
-        color: #1a73e8;
-        font-weight: 600;
-    }
-    .nav-links a:hover { text-decoration: underline; }
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    th, td { border: 1px solid #ddd; padding: 12px; text-align: left; vertical-align: middle; }
-    th { background-color: #f8f9fa; color: #333; }
-    .btn { padding: 6px 12px; text-decoration: none; border-radius: 4px; color: white; display: inline-block; font-size: 14px; }
-    .btn-add { background: #28a745; margin-bottom: 15px; font-weight: 600; }
-    .btn-edit { background: #ffc107; color: black; }
-    .btn-delete { background: #dc3545; }
-    .table-img { width: 70px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid #eee; }
-    .badge-active { background: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
-    .badge-inactive { background: #ffebee; color: #c62828; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
-</style>
 </head>
 <body>
 
-<div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e0e0e0; padding-bottom: 12px; margin-bottom: 20px;">
-    <h2 style="margin: 0; color: #2c3e50;">📦 QUẢN LÝ SẢN PHẨM</h2>
-    <a href="${pageContext.request.contextPath}/admin/product/add" class="btn btn-add">+ Thêm sản phẩm mới</a>
+<div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <h3 class="fw-bold text-dark m-0"><i class="bi bi-box-seam-fill text-info me-2"></i>QUẢN LÝ SẢN PHẨM</h3>
+    <a href="${pageContext.request.contextPath}/admin/product/add" class="btn btn-success btn-sm fw-semibold">
+        <i class="bi bi-plus-circle me-1"></i>Thêm sản phẩm mới
+    </a>
 </div>
 
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Hình Ảnh</th>
-            <th>Tên Sản Phẩm</th>
-            <th>Danh Mục</th>
-            <th>Giá Bán</th>
-            <th>Số Lượng</th>
-            <th>Trạng Thái</th>
-            <th>Thao Tác</th>
-        </tr>
-    </thead>
-    <tbody>
-        <c:forEach items="${listProducts}" var="p">
+<div class="table-responsive">
+    <table class="table table-hover table-bordered table-striped align-middle shadow-sm">
+        <thead class="table-dark">
             <tr>
-                <td>${p.productId}</td>
-                <td>
-                    <c:choose>
-                        <c:when test="${not empty p.images}">
-                            <c:url value="/uploads/${p.images}" var="imgUrl" />
-                            <img src="${imgUrl}" class="table-img" alt="${p.productName}" 
-                                 onerror="this.onerror=null;this.src='https://placehold.co/70x60?text=No+Img';">
-                        </c:when>
-                        <c:otherwise>
-                            <i>Chưa có ảnh</i>
-                        </c:otherwise>
-                    </c:choose>
-                </td>
-                <td><strong>${p.productName}</strong></td>
-                <td>${p.category != null ? p.category.categoryname : 'N/A'}</td>
-                <td><fmt:formatNumber value="${p.price}" type="currency" currencySymbol="₫" maxFractionDigits="0"/></td>
-                <td>${p.quantity}</td>
-                <td>
-                    <span class="${p.status == 1 ? 'badge-active' : 'badge-inactive'}">
-                        ${p.status == 1 ? 'Còn hàng / Hoạt động' : 'Tạm ngưng'}
-                    </span>
-                </td>
-                <td>
-                    <a href="${pageContext.request.contextPath}/admin/product/edit?id=${p.productId}" class="btn btn-edit">Sửa</a>
-                    <a href="${pageContext.request.contextPath}/admin/product/delete?id=${p.productId}" class="btn btn-delete" onclick="return confirm('Bạn chắc chắn muốn xóa sản phẩm này?')">Xóa</a>
-                </td>
+                <th style="width: 70px;" class="text-center">ID</th>
+                <th style="width: 100px;" class="text-center">Hình Ảnh</th>
+                <th>Tên Sản Phẩm</th>
+                <th style="width: 140px;">Danh Mục</th>
+                <th style="width: 130px;" class="text-end">Giá Bán</th>
+                <th style="width: 100px;" class="text-center">Kho</th>
+                <th style="width: 140px;" class="text-center">Trạng Thái</th>
+                <th style="width: 170px;" class="text-center">Thao Tác</th>
             </tr>
-        </c:forEach>
-        <c:if test="${empty listProducts}">
-            <tr>
-                <td colspan="8" style="text-align: center; color: #888; padding: 25px;">Chưa có sản phẩm nào. Hãy bấm nút "+ Thêm sản phẩm mới" ở trên!</td>
-            </tr>
-        </c:if>
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            <c:forEach items="${listProducts}" var="p">
+                <tr>
+                    <td class="text-center fw-bold">#${p.productId}</td>
+                    <td class="text-center">
+                        <c:choose>
+                            <c:when test="${not empty p.images}">
+                                <img src="${pageContext.request.contextPath}/uploads/${p.images}" class="rounded object-fit-cover shadow-sm" style="width: 70px; height: 60px;" alt="${p.productName}" 
+                                     onerror="this.onerror=null;this.src='https://placehold.co/70x60?text=No+Img';">
+                            </c:when>
+                            <c:otherwise>
+                                <span class="badge bg-light text-secondary border">Chưa có ảnh</span>
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+                    <td><strong class="text-dark">${p.productName}</strong></td>
+                    <td>
+                        <span class="badge bg-info-subtle text-info border">
+                            ${p.category != null ? p.category.categoryname : 'N/A'}
+                        </span>
+                    </td>
+                    <td class="text-end fw-bold text-danger">
+                        <fmt:formatNumber value="${p.price}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
+                    </td>
+                    <td class="text-center fw-semibold">${p.quantity}</td>
+                    <td class="text-center">
+                        <span class="badge ${p.status == 1 ? 'bg-success' : 'bg-secondary'}">
+                            ${p.status == 1 ? 'Còn hàng' : 'Tạm ngưng'}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <div class="btn-group btn-group-sm">
+                            <a href="${pageContext.request.contextPath}/admin/product/edit?id=${p.productId}" class="btn btn-outline-primary">
+                                <i class="bi bi-pencil-square me-1"></i>Sửa
+                            </a>
+                            <a href="${pageContext.request.contextPath}/admin/product/delete?id=${p.productId}" class="btn btn-outline-danger" onclick="return confirm('Bạn chắc chắn muốn xóa sản phẩm này?')">
+                                <i class="bi bi-trash me-1"></i>Xóa
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            </c:forEach>
+            <c:if test="${empty listProducts}">
+                <tr>
+                    <td colspan="8" class="text-center py-4 text-muted">
+                        Chưa có sản phẩm nào. Hãy bấm nút "+ Thêm sản phẩm mới" ở trên!
+                    </td>
+                </tr>
+            </c:if>
+        </tbody>
+    </table>
+</div>
 
 </body>
 </html>
